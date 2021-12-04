@@ -18,3 +18,19 @@
 # Date,TempAvgF,HumidityAvgPercent,VisibilityAvgMiles,WindAvgMPH,DailyIncome
 # Сформувати додаткові вихідні файли з найкращими та найгіршими днями для прокату велосипедів.
 # У них вивести всі дані про відповідний день, якщо денний прибуток менший за 30 доларів або більший за 61 долар.
+
+if __name__ == "__main__":
+    daily_income = {}
+    w1, w2, w3, w4 = 0.5, 0.2, 0.2, 0.1
+    with open("austin_weather.txt", "r") as file:
+        fl = True
+        for line in file:
+            split_line = line.split(",")
+            if fl:
+                fl = False
+                continue
+            daily_income[split_line[0]] = w1 * float(split_line[1].replace("-", "1")) + w2 * float(
+                split_line[2].replace("-", "1")) + w3 * float(split_line[3].replace("-", "1")) \
+                                          + w4 * float(split_line[4].replace("-", "1"))
+    for k in daily_income.keys():
+        print(daily_income[k])
