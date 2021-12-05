@@ -1,27 +1,6 @@
-# Припустимо, ми аналізуємо прибутковість сервісу з прокату велосипедів у місті Остін, Техас.
-# Використовуючи кліматичні дані за день, такі як середня температура, середня вологість,
-# середня видимість та середня швидкість вітру необхідно визначити, який приблизно прибуток за день отримує сервіс.
-# Простим підходом для цього було б сформулювати залежність між денним прибутком та кліматичними умовами,
-# такими як середня температура (у градусах Фаренгейта), середня відносна вологість (у відсотках),
-# середня видимість (у милях) та середня швидкість вітру (у милях на годину) як лінійне рівняння.
-
-# daily_income = w1 * temperature + w2 * humidity + w3 * visibility + w4 * wind
-
-# Ми виражаємо денний прибуток як зважену суму температури, опадів і вологості.
-# Це рівняння є наближеним, оскільки дійсне співвідношення не обов’язково має бути лінійним,
-# і можуть бути задіяні інші фактори. Але така проста лінійна модель часто добре працює на практиці.
-# На основі деякого статистичного аналізу історичних даних ми можемо прийти до розумних значень для ваг
-# w1, w2, w3, w4. Ось приклад набору значень:
-# w1, w2, w3, w4 = 0.5, 0.2, 0.2, 0.1
-# Враховуючи кліматичні дані для Остіна, наведені у файлі austin_weather.txt,
-# передбачити денний прибуток для кожного дня. Записати результати у вихідний файл в форматі:
-# Date,TempAvgF,HumidityAvgPercent,VisibilityAvgMiles,WindAvgMPH,DailyIncome
-# Сформувати додаткові вихідні файли з найкращими та найгіршими днями для прокату велосипедів.
-# У них вивести всі дані про відповідний день, якщо денний прибуток менший за 30 доларів або більший за 61 долар.
-
 if __name__ == "__main__":
-    daily_income = {}
-    w1, w2, w3, w4 = 0.5, 0.2, 0.2, 0.1
+    res_list = []
+    w1, w2, w3, w4 = 0.5, 0.2, 0.3, 0.1
     with open("austin_weather.txt", "r") as file:
         fl = True
         for line in file:
@@ -29,8 +8,25 @@ if __name__ == "__main__":
             if fl:
                 fl = False
                 continue
-            daily_income[split_line[0]] = w1 * float(split_line[1].replace("-", "1")) + w2 * float(
-                split_line[2].replace("-", "1")) + w3 * float(split_line[3].replace("-", "1")) \
-                                          + w4 * float(split_line[4].replace("-", "1"))
-    for k in daily_income.keys():
-        print(daily_income[k])
+            daily_income = w1 * float(split_line[1].replace("-", "72")) + w2 * float(
+                split_line[2].replace("-", "54")) + w3 * float(split_line[3].replace("-", "10")) \
+                           + w4 * float(split_line[4].replace("-", "49"))
+            res_list.append((split_line[0], split_line[1], split_line[2], split_line[3], split_line[4].replace("\n", "")
+                             , daily_income))
+
+    with open("austin_income.txt", "w") as file:
+        print("Date TempAvgFHumidity AvgPercent VisibilityAvgMiles WindAvgMPH DailyIncome", file=file)
+        for t in res_list:
+            print(f"{t[0]},{t[1]},{t[2]},{t[3]},{t[4]},{t[5]:.1f}", file=file)
+
+    with open("austin_best_income.txt", "w") as file:
+        print("Date TempAvgFHumidity AvgPercent VisibilityAvgMiles WindAvgMPH DailyIncome", file=file)
+        filtered_list_best = filter(lambda x: x[5] > 61, res_list)
+        for t in filtered_list_best:
+            print(f"{t[0]},{t[1]},{t[2]},{t[3]},{t[4]},{t[5]:.1f}", file=file)
+
+    with open("austin_worst_income.txt", "w") as file:
+        print("Date TempAvgFHumidity AvgPercent VisibilityAvgMiles WindAvgMPH DailyIncome", file=file)
+        filtered_list_worst = filter(lambda x: x[5] < 31, res_list)
+        for t in filtered_list_worst:
+            print(f"{t[0]},{t[1]},{t[2]},{t[3]},{t[4]},{t[5]:.1f}", file=file)
